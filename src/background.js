@@ -95,9 +95,9 @@ async function createWindow() {
   });
 
   // 新建托盘
-  tray = new Tray(path.join(__dirname, "../public/img/HMS.ico"));
+  tray = new Tray(path.join(__dirname, "../public/img/logo.png"));
   // 托盘名称
-  tray.setToolTip("Web-IDE-Demo");
+  tray.setToolTip("Sparke-IDE");
   // 托盘菜单
   const contextMenu = Menu.buildFromTemplate([
     {

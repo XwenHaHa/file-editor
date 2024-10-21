@@ -53,9 +53,9 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         // 设置打包之后的应用名称
-        productName: "Web-IDE-Demo",
+        productName: "Sparke-IDE",
         win: {
-          icon: "public/img/HMS.ico",
+          icon: "public/img/logo.png",
         },
         nsis: {
           // 是否一键安装，建议为 false，可以让用户点击下一步、下一步、下一步的形式安装程序，如果为true，当用户双击构建好的程序，自动安装程序并打开，即：一键安装（one-click installer）
@@ -65,11 +65,11 @@ module.exports = defineConfig({
           // 允许修改安装目录，建议为 true，是否允许用户改变安装目录，默认是不允许
           allowToChangeInstallationDirectory: true,
           // 安装图标
-          installerIcon: "public/img/HMS.ico",
+          installerIcon: "public/img/logo.png",
           // 卸载图标
-          uninstallerIcon: "public/img/HMS.ico",
+          uninstallerIcon: "public/img/logo.png",
           // 安装时头部图标
-          installerHeaderIcon: "public/img/HMS.ico",
+          installerHeaderIcon: "public/img/logo.png",
           // 创建桌面图标
           createDesktopShortcut: true,
           // 创建开始菜单图标

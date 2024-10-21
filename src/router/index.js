@@ -4,7 +4,7 @@ export const rootRoute = {
   path: "/",
   name: "Root",
   redirect: "/home",
-  meta: { layout: "blank", title: "Web-IDE-Demo" },
+  meta: { layout: "blank", title: "Sparke-IDE" },
 };
 
 export const errorRoutes =

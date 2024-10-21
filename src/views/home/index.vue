@@ -1,35 +1,48 @@
 <template>
   <div class="home">
     <div class="editor">
-      <div class="header">Web-IDE-Demo</div>
+      <div class="header">
+        <div class="logo">
+          <div class="image">
+            <img src="@/assets/images/common/logo.png" alt="" />
+          </div>
+          <div class="text">Sparke-IDE</div>
+        </div>
+        <div class="instruction"></div>
+      </div>
       <div class="container">
-        <div class="left">
-          <div class="operate">
-            <el-button type="primary" size="small" @click="handleOpenFile"
-              >打开文件</el-button
-            >
-            <el-button type="primary" size="small" @click="handleOpenDir"
-              >打开文件夹</el-button
-            >
-          </div>
-          <div class="directory">
-            <el-tree
-              style="max-width: 600px"
-              :data="fileTreeData.children"
-              :props="fileTreeProps"
-              @node-click="handleNodeClick"
-            />
-          </div>
-        </div>
-        <div class="right">
-          <CodeEditor v-model:value="code" />
-        </div>
+        <DragCol height="100%" width="100%" :leftPercent="15">
+          <template #left>
+            <div class="left">
+              <div class="operate">
+                <el-button type="primary" size="small" @click="handleOpenFile"
+                  >打开文件</el-button
+                >
+                <el-button type="primary" size="small" @click="handleOpenDir"
+                  >打开文件夹</el-button
+                >
+              </div>
+              <div class="directory">
+                <el-tree
+                  :data="fileTreeData.children"
+                  :props="fileTreeProps"
+                  @node-click="handleNodeClick"
+                />
+              </div>
+            </div>
+          </template>
+          <template #right>
+            <div class="right">
+              <CodeEditor v-model:value="code" />
+            </div>
+          </template>
+        </DragCol>
       </div>
     </div>
     <el-dialog v-model="dialogVisible" title="关闭提示" width="500">
       <el-radio-group v-model="exitValue">
         <el-radio :label="1" size="large">最小化到系统托盘</el-radio>
-        <el-radio :label="2" size="large">退出Web-IDE-Demo</el-radio>
+        <el-radio :label="2" size="large">退出Sparke-IDE</el-radio>
       </el-radio-group>
       <template #footer>
         <div class="dialog-footer">
@@ -44,6 +57,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { CodeEditor } from "@/components/code-editor";
+import { DragCol } from "vue-resizer";
 
 const dialogVisible = ref(false);
 
@@ -115,27 +129,45 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .home {
-  width: calc(100vw - 20px);
-  height: calc(100vh - 40px);
+  width: calc(100vw - 10px);
+  height: calc(100vh - 20px);
   .editor {
     width: 100%;
     height: 100%;
-    background-color: rgba(31, 31, 31);
     .header {
+      display: flex;
+      align-items: center;
       width: 100%;
       height: 40px;
       line-height: 40px;
       color: #fff;
+      background-color: rgba(90, 49, 186);
+      .logo {
+        display: flex;
+        align-items: center;
+        .image {
+          width: 30px;
+          height: 30px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .text {
+          margin-left: 10px;
+        }
+      }
     }
     .container {
       display: flex;
       height: calc(100% - 50px);
       .left {
-        width: 200px;
         height: 100%;
+        background-color: rgba(73, 68, 81);
       }
       .right {
-        flex: 1;
+        height: 100%;
+        background-color: rgba(47, 43, 51);
       }
     }
   }
