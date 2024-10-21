@@ -4,7 +4,7 @@ export const rootRoute = {
   path: "/",
   name: "Root",
   redirect: "/home",
-  meta: { layout: "blank", title: "极片刻码追溯系统-卷绕机" },
+  meta: { layout: "blank", title: "Web-IDE-Demo" },
 };
 
 export const errorRoutes =

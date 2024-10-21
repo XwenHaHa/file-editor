@@ -53,7 +53,7 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         // 设置打包之后的应用名称
-        productName: "极片刻码追溯系统-卷绕机",
+        productName: "Web-IDE-Demo",
         win: {
           icon: "public/img/HMS.ico",
         },

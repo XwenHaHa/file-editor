@@ -97,7 +97,7 @@ async function createWindow() {
   // 新建托盘
   tray = new Tray(path.join(__dirname, "../public/img/HMS.ico"));
   // 托盘名称
-  tray.setToolTip("极片刻码追溯系统-卷绕机");
+  tray.setToolTip("Web-IDE-Demo");
   // 托盘菜单
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -122,7 +122,6 @@ async function createWindow() {
       win.setSkipTaskbar(false);
     } else {
       win.show();
-      win.reload();
       win.setSkipTaskbar(true);
     }
   });
