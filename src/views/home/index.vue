@@ -33,7 +33,13 @@
           </template>
           <template #right>
             <div class="right">
-              <CodeEditor v-model:value="code" />
+              <el-scrollbar height="100%">
+                <CodeEditor
+                  v-model:value="code"
+                  :readOnly="true"
+                  :showCursorWhenSelecting="true"
+                />
+              </el-scrollbar>
             </div>
           </template>
         </DragCol>
@@ -129,8 +135,8 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .home {
-  width: calc(100vw - 10px);
-  height: calc(100vh - 20px);
+  width: 100vw;
+  height: 100vh;
   .editor {
     width: 100%;
     height: 100%;
@@ -167,7 +173,6 @@ onUnmounted(() => {
       }
       .right {
         height: 100%;
-        background-color: rgba(47, 43, 51);
       }
     }
   }
