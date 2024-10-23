@@ -9,6 +9,10 @@
           <div class="text">Sparke-IDE</div>
         </div>
         <div class="instruction">
+          <div class="operate-list">
+            <div class="item" @click="handleToPage('document')">Document</div>
+            <div class="item" @click="handleToPage('camera')">Camera</div>
+          </div>
           <el-switch
             v-model="isDark"
             inline-prompt
@@ -54,29 +58,18 @@
         </DragCol>
       </div>
     </div>
-    <el-dialog v-model="dialogVisible" title="关闭提示" width="500">
-      <el-radio-group v-model="exitValue">
-        <el-radio :label="1" size="large">最小化到系统托盘</el-radio>
-        <el-radio :label="2" size="large">退出Sparke-IDE</el-radio>
-      </el-radio-group>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleConfirm"> 确认 </el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+<script setup name="HomeIndex">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { CodeEditor } from "@/components/code-editor";
 import { DragCol } from "vue-resizer";
 import { Sunny, Moon } from "@element-plus/icons-vue";
 import { useDark, useToggle } from "@vueuse/core";
 
-const dialogVisible = ref(false);
+const router = useRouter();
 
 const handleOpenFile = async () => {
   const [fileHandle] = await window.showOpenFilePicker();
@@ -113,12 +106,6 @@ const handleOpenDir = async () => {
   fileTreeData.value = await processHandle(handle);
 };
 
-// 确认
-const handleConfirm = async () => {
-  await window.electron.ipcRenderer.invoke("win-close", exitValue.value);
-  dialogVisible.value = false;
-};
-
 // 主题切换
 const isDark = useDark({
   // 暗黑class名字
@@ -139,18 +126,10 @@ const handleNodeClick = async (item) => {
   };
 };
 
-const exitValue = ref(1);
-onMounted(() => {
-  window.electron.ipcRenderer.on("win-close-tips", (event, data) => {
-    // 接受主进程的关闭通知
-    dialogVisible.value = true;
-    event.sender.invoke("win-focus", exitValue.value); // 显示关闭弹窗并聚焦
-  });
-});
-
-onUnmounted(() => {
-  window.electron.ipcRenderer.removeListener("win-close-tips");
-});
+// 跳转页面
+const handleToPage = (name) => {
+  router.push(`/${name}`);
+};
 </script>
 
 <style scoped lang="scss">
@@ -184,6 +163,20 @@ onUnmounted(() => {
         }
         .text {
           margin-left: 10px;
+        }
+      }
+      .instruction {
+        display: flex;
+        align-items: center;
+        .operate-list {
+          display: flex;
+          .item {
+            margin-right: 20px;
+            cursor: pointer;
+          }
+          :hover {
+            color: #409eff;
+          }
         }
       }
     }
