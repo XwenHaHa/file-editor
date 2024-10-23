@@ -4,11 +4,19 @@
       <div class="header">
         <div class="logo">
           <div class="image">
-            <img src="@/assets/images/common/logo.png" alt="" />
+            <img src="@/assets/images/common/light-logo.png" alt="" />
           </div>
           <div class="text">Sparke-IDE</div>
         </div>
-        <div class="instruction"></div>
+        <div class="instruction">
+          <el-switch
+            v-model="isDark"
+            inline-prompt
+            :active-icon="Moon"
+            :inactive-icon="Sunny"
+            @change="toggleDark"
+          />
+        </div>
       </div>
       <div class="container">
         <DragCol height="100%" width="100%" :leftPercent="15">
@@ -38,6 +46,7 @@
                   v-model:value="code"
                   :readOnly="true"
                   :showCursorWhenSelecting="true"
+                  theme="idea"
                 />
               </el-scrollbar>
             </div>
@@ -64,6 +73,8 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { CodeEditor } from "@/components/code-editor";
 import { DragCol } from "vue-resizer";
+import { Sunny, Moon } from "@element-plus/icons-vue";
+import { useDark, useToggle } from "@vueuse/core";
 
 const dialogVisible = ref(false);
 
@@ -108,6 +119,15 @@ const handleConfirm = async () => {
   dialogVisible.value = false;
 };
 
+// 主题切换
+const isDark = useDark({
+  // 暗黑class名字
+  valueDark: "dark",
+  // 高亮class名字
+  valueLight: "light",
+});
+const toggleDark = useToggle(isDark);
+
 const code = ref(`console.log('Hello, world!')`);
 const handleNodeClick = async (item) => {
   if (item.kind == "directory") return;
@@ -141,13 +161,16 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     .header {
-      display: flex;
-      align-items: center;
       width: 100%;
       height: 40px;
       line-height: 40px;
-      color: #fff;
-      background-color: rgba(90, 49, 186);
+      padding: 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--light-font);
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--base-border);
       .logo {
         display: flex;
         align-items: center;
@@ -166,12 +189,16 @@ onUnmounted(() => {
     }
     .container {
       display: flex;
-      height: calc(100% - 50px);
+      height: calc(100% - 40px);
+      :deep(.slider_col) {
+        width: 0px !important;
+      }
       .left {
         height: 100%;
-        background-color: rgba(73, 68, 81);
+        background-color: var(--el-fill-color-blank);
       }
       .right {
+        border-left: 1px solid var(--base-border);
         height: 100%;
       }
     }

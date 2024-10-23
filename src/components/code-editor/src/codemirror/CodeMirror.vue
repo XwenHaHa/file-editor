@@ -12,6 +12,8 @@ import { MODE } from "./../typing";
 import "./codemirror.css";
 import "codemirror/theme/idea.css";
 import "codemirror/theme/material-palenight.css";
+import "codemirror/theme/dracula.css";
+
 // modes
 import "codemirror/mode/javascript/javascript";
 import "codemirror/mode/css/css";
@@ -27,6 +29,7 @@ const props = defineProps({
   },
   value: { type: String, default: "" },
   readonly: { type: Boolean, default: false },
+  theme: { type: String, default: "material-palenight" },
 });
 
 const emit = defineEmits(["change"]);
@@ -69,7 +72,7 @@ async function init() {
     mode: props.mode,
     readOnly: props.readonly,
     tabSize: 2,
-    theme: "material-palenight",
+    theme: props.theme,
     lineWrapping: true,
     lineNumbers: true,
     ...addonOptions,

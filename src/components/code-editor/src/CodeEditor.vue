@@ -5,6 +5,7 @@
       @change="handleValueChange"
       :mode="mode"
       :readonly="readonly"
+      :theme="theme"
     />
   </div>
 </template>
@@ -26,6 +27,7 @@ const props = defineProps({
   },
   readonly: { type: Boolean },
   autoFormat: { type: Boolean, default: true },
+  theme: { type: String, default: "material-palenight" },
 });
 
 const emit = defineEmits(["change", "update:value", "format-error"]);
