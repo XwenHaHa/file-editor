@@ -62,14 +62,50 @@
         </div>
       </div>
     </div>
-    <div class="item">111</div>
+    <div class="item">
+      <el-button @click="handleQueryUserData">点击查询用户表</el-button>
+      <el-button @click="handleAddUser" type="primary">新增用户</el-button>
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column prop="name" label="用户名" width="180" />
+        <el-table-column prop="username" label="账号名" width="180" />
+        <el-table-column prop="createtime" label="创建时间" width="180" />
+        <el-table-column prop="updatetime" label="更新时间" />
+      </el-table>
+      <el-dialog
+        v-model="userDialogVisible"
+        title="新增用户"
+        width="500"
+        :before-close="handleCloseUserDialog"
+      >
+        <el-form ref="formRef" :model="form" label-width="140px" status-icon>
+          <el-form-item label="用户名" prop="name">
+            <el-input v-model="form.name" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="账号名" prop="username">
+            <el-input v-model="form.username" placeholder="请输入账号名" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="form.password" placeholder="请输入密码" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="userDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="handleConfirmUser(formRef)">
+              确认
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script setup name="Camera">
-import { ref } from "vue";
+import { ref, reactive, toRefs, onMounted } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
+import dayjs from "dayjs";
 
 const imageURL = ref("");
 const localImageURL = ref("");
@@ -268,6 +304,49 @@ const handleRealTimeCompare = async () => {
   const base64Url = videoCanvas.value.toDataURL();
   await handleDetectFace(base64Url, localRealTimeImageURL.value);
 };
+
+const tableData = ref([]);
+const userDialogVisible = ref(false);
+const formRef = ref();
+
+const userData = reactive({
+  form: {
+    name: "", // 用户名
+    username: "", // 账号名
+    password: "", // 密码
+  },
+});
+const handleQueryUserData = async () => {
+  const users = await window.electron.ipcRenderer.fetchUsers();
+  tableData.value = users.map((item) => ({
+    ...item,
+    createtime: dayjs(item.createtime).format("YYYY-MM-DD HH:mm:ss"),
+    updatetime: dayjs(item.updatetime).format("YYYY-MM-DD HH:mm:ss"),
+  }));
+};
+const handleAddUser = () => {
+  userDialogVisible.value = true;
+};
+const handleCloseUserDialog = () => {
+  userDialogVisible.value = false;
+};
+const handleConfirmUser = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      await window.electron.ipcRenderer.saveUser(JSON.stringify(userData.form));
+      await handleQueryUserData();
+      userDialogVisible.value = false;
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+const { form } = toRefs(userData);
+
+onMounted(() => {
+  handleQueryUserData();
+});
 </script>
 
 <style scoped lang="scss">

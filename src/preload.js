@@ -21,6 +21,11 @@ contextBridge.exposeInMainWorld("electron", {
     ...ipcRenderer,
     on: ipcRenderer.on.bind(ipcRenderer),
     removeListener: ipcRenderer.removeListener.bind(ipcRenderer),
+    fetchUsers: () => ipcRenderer.invoke("fetch-users"),
+    fetchUserById: (id) => ipcRenderer.invoke("fetch-user-by-id", id),
+    fetchUserByFiled: (field, value) =>
+      ipcRenderer.invoke("fetch-user-by-field", field, value),
+    saveUser: (newUser) => ipcRenderer.invoke("save-user", newUser),
   },
   capture: (fileName, callback) => {
     webcam.capture(fileName, (err, data) => {

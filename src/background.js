@@ -9,6 +9,8 @@ import {
 } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 const path = require("path");
+const { createConnection } = require("typeorm");
+const User = require("./entity/userSchema"); // 导入用户实体
 
 const isMac = process.platform === "darwin";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -45,7 +47,6 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
     // Load the index.html when not in development
@@ -131,9 +132,6 @@ async function createWindow() {
     if (!process.env.IS_TEST) win.webContents.openDevTools();
   });
   if (process.env.NODE_ENV !== "production") {
-    globalShortcut.register("ctrl+shift+a", () => {
-      if (!process.env.IS_TEST) win.webContents.openDevTools();
-    });
     globalShortcut.register("f5", () => {
       if (!process.env.IS_TEST) win.reload();
     });
@@ -159,22 +157,97 @@ app.on("before-quit", () => {
   willQuitApp = true;
 });
 
+let connection;
+async function initDatabase() {
+  connection = await createConnection({
+    type: "mysql",
+    host: "localhost",
+    port: 3306,
+    username: "root",
+    password: "123456",
+    database: "electron",
+    synchronize: true,
+    logging: false,
+    entities: [User],
+  });
+  console.log("Database connected!");
+}
+
+// 全量查用户表
+ipcMain.handle("fetch-users", async () => {
+  const userRepository = connection.getRepository(User);
+  return await userRepository.find();
+});
+
+// 根据ID单查用户
+ipcMain.handle("fetch-user-by-id", async (event, id) => {
+  const userRepository = connection.getRepository(User);
+  return await userRepository.findOne(id);
+});
+
+// 根据某个字段单查用户
+ipcMain.handle("fetch-user-by-field", async (event, field, value) => {
+  const userRepository = connection.getRepository(User);
+  const user = await userRepository.findOne({ where: { [field]: value } });
+  return user;
+});
+
+// 保存用户
+ipcMain.handle("save-user", async (event, newUser) => {
+  console.log(newUser);
+  try {
+    const userRepository = connection.getRepository(User);
+    const currentUser = JSON.parse(newUser);
+
+    // 使用账户名进行去重检查
+    const existingUser = await userRepository.findOne({
+      where: { username: currentUser.username },
+    });
+
+    if (existingUser) {
+      return {
+        isRepeat: true,
+        user: existingUser,
+      };
+    } else {
+      // 如果没有重复，保存用户
+      const savedUser = await userRepository.save(currentUser);
+      return {
+        isRepeat: false,
+        user: savedUser,
+      };
+    }
+  } catch (error) {
+    throw new Error("Error saving user: " + error.message);
+  }
+});
+
+// 删除用户
+ipcMain.handle("remove-user", async (event, existingUserId) => {
+  try {
+    const existingUser = await userRepository.findOne(existingUserId);
+    if (existingUser) {
+      await userRepository.remove(existingUser);
+      return { success: true }; // 返回成功信息
+    } else {
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    throw new Error("Error removing user: " + error.message);
+  }
+});
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  // if (isDevelopment && !process.env.IS_TEST) {
-  //   // Install Vue Devtools
-  //   try {
-  //     await installExtension(VUEJS3_DEVTOOLS);
-  //   } catch (e) {
-  //     console.error("Vue Devtools failed to install:", e.toString());
-  //   }
-  // }
+  console.log("Database connected!");
   //取消头部菜单
   Menu.setApplicationMenu(null);
-
   createWindow();
+  initDatabase().catch((error) =>
+    console.error("Database initialization error:", error)
+  );
 });
 
 // Exit cleanly on request from parent process in development mode.

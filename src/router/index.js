@@ -31,8 +31,17 @@ export const otherRoutes = [
     path: "/",
     component: blankLayout,
     name: "Root",
-    redirect: "/home", // 直接重定向到/home路由
+    redirect: "/login", // 直接重定向到/home路由
     meta: { layout: "blank", title: "首页" },
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () =>
+      import(/* webpackChunkName: "homeIndex" */ "@/views/login/index.vue"),
+    meta: {
+      title: "登录",
+    },
   },
   {
     path: "/home",
